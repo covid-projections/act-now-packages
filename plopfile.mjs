@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { exec } from "child_process";
 
 const templateReadme = prepareTemplate(`
 # {{> packageName}}
@@ -56,6 +57,17 @@ export default function (/** @type {import('plop').NodePlopAPI} */ plop) {
         type: "add",
         path: `packages/{{> packageName}}/LICENSE`,
         templateFile: "./LICENSE",
+      },
+      function (data) {
+        const dashCase = plop.getHelper("dashCase");
+        const cmd = `cd packages/${dashCase(data.name)}; yarn; cd ../..`;
+        exec(cmd, (error, stdout) => {
+          if (error) {
+            console.error(`Error: ${error}`);
+            return;
+          }
+          console.log(stdout);
+        });
       },
     ],
   });
