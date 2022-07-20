@@ -42,12 +42,29 @@ const templatePackage = prepareTemplate(`
   "types": "lib/index.d.ts",
   "files": ["lib"],
   "scripts": {
-    "build": "tsc src/index.ts --outDir lib --declaration"
+    "build": "tsc --project ./tsconfig.json"
   },
   "devDependencies": {
     "typescript": "^4.6.4"
   }
 }`);
+
+const templateTSConfig = prepareTemplate(`
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "declaration": true,
+    "declarationDir": "lib",
+    "noEmit": false,
+    "outDir": "lib",
+    "rootDir": "src",
+    "module": "commonjs"
+  },
+  "include": ["src/**/*.ts", "src/**/*.json"],
+  "exclude": ["node_modules", "**/*.test.*"]
+}
+`);
 
 export default function (/** @type {import('plop').NodePlopAPI} */ plop) {
   /**
@@ -92,6 +109,11 @@ export default function (/** @type {import('plop').NodePlopAPI} */ plop) {
         type: "add",
         path: `packages/{{dashCase name}}/LICENSE`,
         templateFile: "./LICENSE",
+      },
+      {
+        type: "add",
+        path: `packages/{{dashCase name}}/tsconfig.json`,
+        template: templateTSConfig,
       },
       {
         type: "yarn",
